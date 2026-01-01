@@ -22,11 +22,26 @@ public class Affiliation extends BaseEntity {
     @JoinColumn(name = "university_id", nullable = false)
     private University university;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category; // 단과대학, 학과, 동아리 등
+    private AffiliationCategory category; // 단과대학, 학과, 동아리 등
 
     @Column(nullable = false)
     private String name; // 공과대학, 소프트웨어공학과 등
 
     private LocalDateTime expiresAt; // 제휴 만료 시점
+
+    @Builder
+    public Affiliation(University university, AffiliationCategory category, String name, LocalDateTime expiresAt) {
+        this.university = university;
+        this.category = category;
+        this.name = name;
+        this.expiresAt = expiresAt;
+    }
+
+    public void update(AffiliationCategory category, String name, LocalDateTime expiresAt) {
+        this.category = category;
+        this.name = name;
+        this.expiresAt = expiresAt;
+    }
 }

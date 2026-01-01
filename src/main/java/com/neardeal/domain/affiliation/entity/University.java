@@ -19,11 +19,16 @@ public class University {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String emailDomain;
 
     @Builder
     public University(String name, String emailDomain) {
+        this.name = name;
+        this.emailDomain = emailDomain;
+    }
+
+    public void update(String name, String emailDomain) {
         this.name = name;
         this.emailDomain = emailDomain;
     }
