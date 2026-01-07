@@ -1,8 +1,8 @@
-package com.neardeal.domain.affiliation.dto;
+package com.neardeal.domain.organization.dto;
 
-import com.neardeal.domain.affiliation.entity.Affiliation;
-import com.neardeal.domain.affiliation.entity.AffiliationCategory;
-import com.neardeal.domain.affiliation.entity.University;
+import com.neardeal.domain.organization.entity.Organization;
+import com.neardeal.domain.organization.entity.OrganizationCategory;
+import com.neardeal.domain.organization.entity.University;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -13,18 +13,18 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreateAffiliationRequest {
+public class CreateOrganizationRequest {
 
     @NotNull(message = "카테고리는 필수입니다.")
-    private AffiliationCategory category;
+    private OrganizationCategory category;
 
     @NotBlank(message = "소속 이름은 필수입니다.")
     private String name;
 
     private LocalDateTime expiresAt;
 
-    public Affiliation toEntity(University university) {
-        return Affiliation.builder()
+    public Organization toEntity(University university) {
+        return Organization.builder()
                 .university(university)
                 .category(this.category)
                 .name(this.name)

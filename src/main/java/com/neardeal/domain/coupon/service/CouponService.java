@@ -2,8 +2,8 @@ package com.neardeal.domain.coupon.service;
 
 import com.neardeal.common.exception.CustomException;
 import com.neardeal.common.exception.ErrorCode;
-import com.neardeal.domain.affiliation.entity.Affiliation;
-import com.neardeal.domain.affiliation.repository.AffiliationRepository;
+import com.neardeal.domain.organization.entity.Organization;
+import com.neardeal.domain.organization.repository.OrganizationRepository;
 import com.neardeal.domain.coupon.dto.*;
 import com.neardeal.domain.coupon.entity.*;
 import com.neardeal.domain.coupon.repository.*;
@@ -33,7 +33,7 @@ public class CouponService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private final AffiliationRepository affiliationRepository;
+    private final OrganizationRepository organizationRepository;
 
     // --- 점주용 ---
 
@@ -44,9 +44,9 @@ public class CouponService {
 
         validateStoreOwner(store, user);
 
-        Affiliation affiliation = null;
-        if (request.getTargetAffiliationId() != null) {
-            affiliation = affiliationRepository.findById(request.getTargetAffiliationId())
+        Organization organization = null;
+        if (request.getTargetOrganizationId() != null) {
+            organization = organizationRepository.findById(request.getTargetOrganizationId())
                     .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "제휴 정보를 찾을 수 없습니다."));
         }
 
@@ -54,7 +54,7 @@ public class CouponService {
                 .store(store)
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .targetAffiliation(affiliation)
+                .targetOrganization(organization)
                 .issueStartsAt(request.getIssueStartsAt())
                 .issueEndsAt(request.getIssueEndsAt())
                 .totalQuantity(request.getTotalQuantity())

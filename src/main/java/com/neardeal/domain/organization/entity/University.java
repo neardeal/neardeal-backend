@@ -1,4 +1,4 @@
-package com.neardeal.domain.affiliation.entity;
+package com.neardeal.domain.organization.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

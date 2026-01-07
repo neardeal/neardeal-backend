@@ -1,10 +1,10 @@
-package com.neardeal.domain.affiliation.controller;
+package com.neardeal.domain.organization.controller;
 
 import com.neardeal.common.response.CommonResponse;
-import com.neardeal.domain.affiliation.dto.CreateUniversityRequest;
-import com.neardeal.domain.affiliation.dto.UniversityResponse;
-import com.neardeal.domain.affiliation.dto.UpdateUniversityRequest;
-import com.neardeal.domain.affiliation.service.UniversityService;
+import com.neardeal.domain.organization.dto.CreateUniversityRequest;
+import com.neardeal.domain.organization.dto.UniversityResponse;
+import com.neardeal.domain.organization.dto.UpdateUniversityRequest;
+import com.neardeal.domain.organization.service.UniversityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

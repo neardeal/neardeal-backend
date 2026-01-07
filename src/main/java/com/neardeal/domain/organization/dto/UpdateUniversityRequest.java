@@ -1,4 +1,4 @@
-package com.neardeal.domain.affiliation.dto;
+package com.neardeal.domain.organization.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
