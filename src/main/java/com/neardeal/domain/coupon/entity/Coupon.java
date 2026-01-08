@@ -1,7 +1,7 @@
 package com.neardeal.domain.coupon.entity;
 
 import com.neardeal.common.entity.BaseEntity;
-import com.neardeal.domain.affiliation.entity.Affiliation;
+import com.neardeal.domain.organization.entity.Organization;
 import com.neardeal.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,8 +30,8 @@ public class Coupon extends BaseEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_affiliation_id")
-    private Affiliation targetAffiliation; // 제휴 쿠폰일 경우 타겟 소속
+    @JoinColumn(name = "target_organization_id")
+    private Organization targetOrganization; // 제휴 쿠폰일 경우 타겟 소속
 
     private LocalDateTime issueStartsAt; // 예약 발행 시 사용
     private LocalDateTime issueEndsAt; // 쿠폰 노출/발급 종료일
@@ -47,11 +47,11 @@ public class Coupon extends BaseEntity {
     private CouponStatus status;
 
     @Builder
-    public Coupon(Store store, String title, String description, Affiliation targetAffiliation, LocalDateTime issueStartsAt, LocalDateTime issueEndsAt, Integer totalQuantity, Integer limitPerUser, CouponStatus status) {
+    public Coupon(Store store, String title, String description, Organization targetOrganization, LocalDateTime issueStartsAt, LocalDateTime issueEndsAt, Integer totalQuantity, Integer limitPerUser, CouponStatus status) {
         this.store = store;
         this.title = title;
         this.description = description;
-        this.targetAffiliation = targetAffiliation;
+        this.targetOrganization = targetOrganization;
         this.issueStartsAt = issueStartsAt;
         this.issueEndsAt = issueEndsAt;
         this.totalQuantity = totalQuantity;

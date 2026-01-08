@@ -1,6 +1,6 @@
 package com.neardeal.domain.store.entity;
 
-import com.neardeal.domain.affiliation.entity.Affiliation;
+import com.neardeal.domain.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,10 +8,10 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "store_affiliation", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "store_id", "affiliation_id" })
+@Table(name = "store_organization", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "store_id", "organization_id" })
 })
-public class StoreAffiliation {
+public class StoreOrganization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +22,12 @@ public class StoreAffiliation {
     private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "affiliation_id", nullable = false)
-    private Affiliation affiliation;
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
 
     @Builder
-    public StoreAffiliation(Store store, Affiliation affiliation) {
+    public StoreOrganization(Store store, Organization organization) {
         this.store = store;
-        this.affiliation = affiliation;
+        this.organization = organization;
     }
 }

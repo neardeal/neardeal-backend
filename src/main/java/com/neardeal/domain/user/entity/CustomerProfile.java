@@ -1,6 +1,6 @@
 package com.neardeal.domain.user.entity;
 
-import com.neardeal.domain.affiliation.entity.University;
+import com.neardeal.domain.organization.entity.University;
 import jakarta.persistence.*;
 import lombok.*;
 

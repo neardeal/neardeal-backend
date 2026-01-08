@@ -1,6 +1,6 @@
-package com.neardeal.domain.affiliation.dto;
+package com.neardeal.domain.organization.dto;
 
-import com.neardeal.domain.affiliation.entity.University;
+import com.neardeal.domain.organization.entity.University;
 import lombok.Builder;
 import lombok.Getter;
 

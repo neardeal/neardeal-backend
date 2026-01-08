@@ -2,8 +2,8 @@ package com.neardeal.domain.user.service;
 
 import com.neardeal.common.exception.CustomException;
 import com.neardeal.common.exception.ErrorCode;
-import com.neardeal.domain.affiliation.entity.University;
-import com.neardeal.domain.affiliation.repository.UniversityRepository;
+import com.neardeal.domain.organization.entity.University;
+import com.neardeal.domain.organization.repository.UniversityRepository;
 import com.neardeal.domain.user.dto.AuthTokens;
 import com.neardeal.domain.user.dto.CompleteSocialSignupRequest;
 import com.neardeal.domain.user.dto.LoginRequest;

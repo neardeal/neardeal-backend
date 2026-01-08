@@ -1,12 +1,12 @@
-package com.neardeal.domain.affiliation.service;
+package com.neardeal.domain.organization.service;
 
 import com.neardeal.common.exception.CustomException;
 import com.neardeal.common.exception.ErrorCode;
-import com.neardeal.domain.affiliation.dto.CreateUniversityRequest;
-import com.neardeal.domain.affiliation.dto.UniversityResponse;
-import com.neardeal.domain.affiliation.dto.UpdateUniversityRequest;
-import com.neardeal.domain.affiliation.entity.University;
-import com.neardeal.domain.affiliation.repository.UniversityRepository;
+import com.neardeal.domain.organization.dto.CreateUniversityRequest;
+import com.neardeal.domain.organization.dto.UniversityResponse;
+import com.neardeal.domain.organization.dto.UpdateUniversityRequest;
+import com.neardeal.domain.organization.entity.University;
+import com.neardeal.domain.organization.repository.UniversityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

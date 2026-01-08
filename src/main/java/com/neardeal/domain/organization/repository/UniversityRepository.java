@@ -1,6 +1,6 @@
-package com.neardeal.domain.affiliation.repository;
+package com.neardeal.domain.organization.repository;
 
-import com.neardeal.domain.affiliation.entity.University;
+import com.neardeal.domain.organization.entity.University;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UniversityRepository extends JpaRepository<University, Long> {

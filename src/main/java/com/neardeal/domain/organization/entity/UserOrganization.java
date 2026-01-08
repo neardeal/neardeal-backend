@@ -1,4 +1,4 @@
-package com.neardeal.domain.affiliation.entity;
+package com.neardeal.domain.organization.entity;
 
 import com.neardeal.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -8,8 +8,8 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user_affiliation")
-public class UserAffiliation {
+@Table(name = "user_organization")
+public class UserOrganization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,12 +20,12 @@ public class UserAffiliation {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "affiliation_id", nullable = false)
-    private Affiliation affiliation;
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
 
     @Builder
-    public UserAffiliation(User user, Affiliation affiliation) {
+    public UserOrganization(User user, Organization organization) {
         this.user = user;
-        this.affiliation = affiliation;
+        this.organization = organization;
     }
 }

@@ -13,7 +13,7 @@ public class CouponResponse {
     private Long storeId;
     private String title;
     private String description;
-    private Long targetAffiliationId;
+    private Long targetOrganizationId;
     private LocalDateTime issueStartsAt;
     private LocalDateTime issueEndsAt;
     private Integer totalQuantity;
@@ -26,8 +26,8 @@ public class CouponResponse {
                 .storeId(coupon.getStore().getId())
                 .title(coupon.getTitle())
                 .description(coupon.getDescription())
-                .targetAffiliationId(
-                        coupon.getTargetAffiliation() != null ? coupon.getTargetAffiliation().getId() : null)
+                .targetOrganizationId(
+                        coupon.getTargetOrganization() != null ? coupon.getTargetOrganization().getId() : null)
                 .issueStartsAt(coupon.getIssueStartsAt())
                 .issueEndsAt(coupon.getIssueEndsAt())
                 .totalQuantity(coupon.getTotalQuantity())

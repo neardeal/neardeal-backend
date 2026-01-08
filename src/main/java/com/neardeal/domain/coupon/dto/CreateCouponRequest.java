@@ -21,7 +21,7 @@ public class CreateCouponRequest {
 
     private String description;
 
-    private Long targetAffiliationId;
+    private Long targetOrganizationId;
 
     private LocalDateTime issueStartsAt;
     private LocalDateTime issueEndsAt;
