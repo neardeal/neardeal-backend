@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -123,5 +124,13 @@ public class StoreService {
 
         storeRepository.delete(store);
         log.info("[DeleteStore] Success. storeId={}", storeId);
+    }
+
+    public List<StoreResponse> getMyStores(User user) {
+        User owner = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        List<Store> stores = storeRepository.findAllByUser(owner);
+        return stores.stream().map(StoreResponse::from).toList();
     }
 }

@@ -45,6 +45,8 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private int reportCount;
 
+    private boolean isPrivate;
+
     @Builder
     public Review(User user, Store store, Review parentReview, boolean isVerified, int rating, String content) {
         this.user = user;

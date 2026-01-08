@@ -26,6 +26,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Store", description = "상점 관련 API")
 @RestController
 @RequestMapping("/api/stores")
@@ -102,5 +104,16 @@ public class StoreController {
                         @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails) {
                 storeService.deleteStore(storeId, principalDetails.getUser());
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[점주] 내 상점 목록 조회", description = "내가 소유한 모든 상점 목록을 조회합니다.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "내 상점 목록 조회 성공")
+        })
+        @GetMapping("/my")
+        public ResponseEntity<CommonResponse<List<StoreResponse>>> getMyStores(
+                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails) {
+                List<StoreResponse> response = storeService.getMyStores(principalDetails.getUser());
+                return ResponseEntity.ok(CommonResponse.success(response));
         }
 }
