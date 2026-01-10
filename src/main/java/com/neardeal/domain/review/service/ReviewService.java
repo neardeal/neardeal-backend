@@ -6,7 +6,9 @@ import com.neardeal.domain.coupon.entity.CouponUsageStatus;
 import com.neardeal.domain.coupon.repository.CustomerCouponRepository;
 import com.neardeal.domain.review.dto.*;
 import com.neardeal.domain.review.entity.Review;
+import com.neardeal.domain.review.entity.ReviewLike;
 import com.neardeal.domain.review.entity.ReviewReport;
+import com.neardeal.domain.review.repository.ReviewLikeRepository;
 import com.neardeal.domain.review.repository.ReviewReportRepository;
 import com.neardeal.domain.review.repository.ReviewRepository;
 import com.neardeal.domain.store.entity.Store;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
     private final StoreRepository storeRepository;
     private final CustomerCouponRepository customerCouponRepository;
     private final UserRepository userRepository;
@@ -39,7 +42,8 @@ public class ReviewService {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 해당 상점에 대한 리뷰를 작성했습니다.");
         }
 
-        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store, CouponUsageStatus.USED);
+        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store,
+                CouponUsageStatus.USED);
 
         Review review = Review.builder()
                 .user(user)
@@ -59,13 +63,13 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND, "리뷰를 찾을 수 없습니다."));
 
-
         if (!review.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
         Store store = review.getStore();
-        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store, CouponUsageStatus.USED);
+        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store,
+                CouponUsageStatus.USED);
 
         review.updateReview(request.getContent(), request.getRating(), isVerified);
     }
@@ -126,5 +130,42 @@ public class ReviewService {
         reviewReportRepository.save(report);
 
         review.increaseReportCount();
+    }
+
+    // 리뷰 좋아요
+    @Transactional
+    public void addLike(User user, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND, "존재하지 않는 리뷰입니다."));
+
+        if (review.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.BAD_REQUEST, "자신의 리뷰에는 좋아요를 누를 수 없습니다.");
+        }
+
+        if (reviewLikeRepository.existsByUserAndReview(user, review)) {
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 좋아요를 누른 리뷰입니다.");
+        }
+
+        ReviewLike reviewLike = ReviewLike.builder()
+                .user(user)
+                .review(review)
+                .build();
+
+        reviewLikeRepository.save(reviewLike);
+        review.increaseLikeCount();
+    }
+
+    // 리뷰 좋아요 취소
+    @Transactional
+    public void removeLike(User user, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND, "존재하지 않는 리뷰입니다."));
+
+        if (!reviewLikeRepository.existsByUserAndReview(user, review)) {
+            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "좋아요를 누른 리뷰가 아닙니다.");
+        }
+
+        reviewLikeRepository.deleteByUserAndReview(user, review);
+        review.decreaseLikeCount();
     }
 }

@@ -20,6 +20,7 @@ public class ReviewResponse {
     private String content;
     private Integer rating;
     private LocalDateTime createdAt;
+    private int likeCount;
 
     public static ReviewResponse from(Review review) {
         return ReviewResponse.builder()
@@ -29,6 +30,7 @@ public class ReviewResponse {
                 .content(review.getContent())
                 .rating(review.getRating())
                 .createdAt(review.getCreatedAt())
+                .likeCount(review.getLikeCount())
                 .build();
     }
 }

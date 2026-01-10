@@ -42,7 +42,8 @@ public class ReviewController {
         public ResponseEntity<CommonResponse<Long>> createReview(
                         @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
                         @Parameter(description = "상점 ID") @PathVariable Long storeId,
-                        @RequestBody @Valid CreateReviewRequest request) {
+                        @RequestBody @Valid CreateReviewRequest request)
+        {
                 Long reviewId = reviewService.createReview(principalDetails.getUser(), storeId, request);
                 return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(reviewId));
         }
@@ -57,7 +58,8 @@ public class ReviewController {
         public ResponseEntity<CommonResponse<Void>> updateReview(
                         @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
                         @Parameter(description = "리뷰 ID") @PathVariable Long reviewId,
-                        @RequestBody @Valid UpdateReviewRequest request) {
+                        @RequestBody @Valid UpdateReviewRequest request)
+        {
                 reviewService.updateReview(reviewId, principalDetails.getUser(), request);
                 return ResponseEntity.ok(CommonResponse.success(null));
         }
@@ -71,7 +73,8 @@ public class ReviewController {
         @DeleteMapping("/reviews/{reviewId}")
         public ResponseEntity<CommonResponse<Void>> deleteReview(
                         @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
-                        @Parameter(description = "리뷰 ID") @PathVariable Long reviewId) {
+                        @Parameter(description = "리뷰 ID") @PathVariable Long reviewId)
+        {
                 reviewService.deleteReview(reviewId, principalDetails.getUser());
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonResponse.success(null));
         }
@@ -84,7 +87,8 @@ public class ReviewController {
         @GetMapping("/stores/{storeId}/reviews")
         public ResponseEntity<CommonResponse<PageResponse<ReviewResponse>>> getReviews(
                         @Parameter(description = "상점 ID") @PathVariable Long storeId,
-                        @Parameter(description = "페이징 정보") @PageableDefault(size = 10) Pageable pageable) {
+                        @Parameter(description = "페이징 정보") @PageableDefault(size = 10) Pageable pageable)
+        {
                 Page<ReviewResponse> reviews = reviewService.getReviews(storeId, pageable);
                 return ResponseEntity.ok(CommonResponse.success(PageResponse.from(reviews)));
         }
@@ -96,22 +100,56 @@ public class ReviewController {
         })
         @GetMapping("/stores/{storeId}/reviews/stats")
         public ResponseEntity<CommonResponse<ReviewStatsResponse>> getReviewStats(
-                        @Parameter(description = "상점 ID") @PathVariable Long storeId) {
+                        @Parameter(description = "상점 ID") @PathVariable Long storeId
+        )
+        {
                 ReviewStatsResponse response = reviewService.getReviewStats(storeId);
                 return ResponseEntity.ok(CommonResponse.success(response));
         }
 
         @Operation(summary = "[공통] 리뷰 신고 ", description = "특정 리뷰를 신고합니다.")
         @ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "리뷰 신고 성공"),
-                @ApiResponse(responseCode = "404", description = "리뷰 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+                        @ApiResponse(responseCode = "200", description = "리뷰 신고 성공"),
+                        @ApiResponse(responseCode = "404", description = "리뷰 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
         })
         @PostMapping("/reviews/{reviewId}/reports")
         public ResponseEntity<CommonResponse<Void>> reportReview(
-                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
-                @Parameter(description = "리뷰 ID") @PathVariable Long reviewId,
-                @RequestBody @Valid ReportRequest request) {
+                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
+                        @Parameter(description = "리뷰 ID") @PathVariable Long reviewId,
+                        @RequestBody @Valid ReportRequest request
+        )
+        {
                 reviewService.reportReview(reviewId, principalDetails.getUser().getId(), request);
+                return ResponseEntity.ok(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[공통] 리뷰 좋아요", description = "리뷰에 좋아요를 누릅니다.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "리뷰 좋아요 성공"),
+                        @ApiResponse(responseCode = "400", description = "자신의 리뷰에 좋아요 시도", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
+                        @ApiResponse(responseCode = "404", description = "리뷰 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
+                        @ApiResponse(responseCode = "409", description = "이미 좋아요 누름", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+        })
+        @PostMapping("/reviews/{reviewId}/likes")
+        public ResponseEntity<CommonResponse<Void>> addLike(
+                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
+                        @Parameter(description = "리뷰 ID") @PathVariable Long reviewId)
+        {
+                reviewService.addLike(principalDetails.getUser(), reviewId);
+                return ResponseEntity.ok(CommonResponse.success(null));
+        }
+
+        @Operation(summary = "[공통] 리뷰 좋아요 취소", description = "리뷰 좋아요를 취소합니다.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "리뷰 좋아요 취소 성공"),
+                        @ApiResponse(responseCode = "404", description = "좋아요를 누르지 않은 리뷰", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+        })
+        @DeleteMapping("/reviews/{reviewId}/likes")
+        public ResponseEntity<CommonResponse<Void>> removeLike(
+                        @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
+                        @Parameter(description = "리뷰 ID") @PathVariable Long reviewId)
+        {
+                reviewService.removeLike(principalDetails.getUser(), reviewId);
                 return ResponseEntity.ok(CommonResponse.success(null));
         }
 }
