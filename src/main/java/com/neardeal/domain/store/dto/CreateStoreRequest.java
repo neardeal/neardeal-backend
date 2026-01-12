@@ -2,6 +2,7 @@ package com.neardeal.domain.store.dto;
 
 import com.neardeal.domain.store.entity.Store;
 import com.neardeal.domain.store.entity.StoreCategory;
+import com.neardeal.domain.store.entity.StoreMood;
 import com.neardeal.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -32,7 +36,9 @@ public class CreateStoreRequest {
     private String operatingHours;
 
     @NotNull(message = "카테고리는 필수입니다.")
-    private StoreCategory storeCategory;
+    private List<StoreCategory> storeCategories;
+
+    private List<StoreMood> storeMoods;
 
     public Store toEntity(User user) {
         return Store.builder()
@@ -44,7 +50,8 @@ public class CreateStoreRequest {
                 .phoneNumber(phoneNumber)
                 .introduction(introduction)
                 .operatingHours(operatingHours)
-                .storeCategory(storeCategory)
+                .storeCategories(new HashSet<>(storeCategories))
+                .storeMoods(storeMoods != null ? new HashSet<>(storeMoods) : new HashSet<>())
                 .build();
     }
 }

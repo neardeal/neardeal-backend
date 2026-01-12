@@ -1,10 +1,13 @@
 package com.neardeal.domain.store.dto;
 
 import com.neardeal.domain.store.entity.StoreCategory;
+import com.neardeal.domain.store.entity.StoreMood;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -25,5 +28,7 @@ public class UpdateStoreRequest {
 
     private String operatingHours;
 
-    private StoreCategory storeCategory;
+    private List<StoreCategory> storeCategories;
+    
+    private List<StoreMood> storeMoods;
 }

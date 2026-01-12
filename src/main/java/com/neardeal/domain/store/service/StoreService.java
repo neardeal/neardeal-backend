@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,11 +73,11 @@ public class StoreService {
         Page<Store> storePage;
 
         if (keyword != null && category != null) {
-            storePage = storeRepository.findByNameContainingAndStoreCategory(keyword, category, pageable);
+            storePage = storeRepository.findByNameContainingAndStoreCategoriesContains(keyword, category, pageable);
         } else if (keyword != null) {
             storePage = storeRepository.findByNameContaining(keyword, pageable);
         } else if (category != null) {
-            storePage = storeRepository.findByStoreCategory(category, pageable);
+            storePage = storeRepository.findByStoreCategoriesContains(category, pageable);
         } else {
             storePage = storeRepository.findAll(pageable);
         }
@@ -111,7 +112,8 @@ public class StoreService {
                 request.getPhoneNumber(),
                 request.getIntroduction(),
                 request.getOperatingHours(),
-                request.getStoreCategory()
+                request.getStoreCategories() != null ? new HashSet<>(request.getStoreCategories()) : null,
+                request.getStoreMoods() != null ? new HashSet<>(request.getStoreMoods()) : null
         );
 
         // 새 이미지가 존재하면 기존 것 모두 삭제 후 새로 등록
