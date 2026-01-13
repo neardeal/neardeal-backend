@@ -91,7 +91,11 @@ public class ItemService {
                 request.getPrice(),
                 request.getDescription(),
                 imageUrl,
-                request.getIsSoldOut()
+                request.getIsSoldOut(),
+                request.getItemOrder(),
+                request.getIsRepresentative(),
+                request.getIsHidden(),
+                request.getBadge()
         );
     }
 

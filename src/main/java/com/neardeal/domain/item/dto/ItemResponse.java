@@ -1,6 +1,7 @@
 package com.neardeal.domain.item.dto;
 
 import com.neardeal.domain.item.entity.Item;
+import com.neardeal.domain.item.entity.ItemBadge;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,6 +15,10 @@ public class ItemResponse {
     private String description;
     private String imageUrl;
     private boolean isSoldOut;
+    private Integer itemOrder;
+    private boolean isRepresentative;
+    private boolean isHidden;
+    private ItemBadge badge;
 
     public static ItemResponse from(Item item) {
         return ItemResponse.builder()
@@ -24,6 +29,10 @@ public class ItemResponse {
                 .description(item.getDescription())
                 .imageUrl(item.getImageUrl())
                 .isSoldOut(item.isSoldOut())
+                .itemOrder(item.getItemOrder())
+                .isRepresentative(item.isRepresentative())
+                .isHidden(item.isHidden())
+                .badge(item.getBadge())
                 .build();
     }
 }

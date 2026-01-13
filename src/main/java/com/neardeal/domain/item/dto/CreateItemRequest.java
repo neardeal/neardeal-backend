@@ -1,6 +1,7 @@
 package com.neardeal.domain.item.dto;
 
 import com.neardeal.domain.item.entity.Item;
+import com.neardeal.domain.item.entity.ItemBadge;
 import com.neardeal.domain.store.entity.Store;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -25,6 +26,14 @@ public class CreateItemRequest {
 
     private boolean isSoldOut;
 
+    private Integer itemOrder;
+
+    private boolean isRepresentative;
+
+    private boolean isHidden;
+
+    private ItemBadge badge;
+
     public Item toEntity(Store store, String uploadedImageUrl) {
         return Item.builder()
                 .store(store)
@@ -33,6 +42,10 @@ public class CreateItemRequest {
                 .description(description)
                 .imageUrl(uploadedImageUrl)
                 .isSoldOut(isSoldOut)
+                .itemOrder(itemOrder)
+                .isRepresentative(isRepresentative)
+                .isHidden(isHidden)
+                .badge(badge)
                 .build();
     }
 }

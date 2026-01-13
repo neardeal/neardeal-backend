@@ -33,17 +33,30 @@ public class Item extends BaseEntity {
 
     private boolean isSoldOut = false;
 
+    private Integer itemOrder;
+
+    private boolean isRepresentative = false;
+
+    private boolean isHidden = false;
+
+    @Enumerated(EnumType.STRING)
+    private ItemBadge badge;
+
     @Builder
-    public Item(Store store, String name, int price, String description, String imageUrl, boolean isSoldOut) {
+    public Item(Store store, String name, int price, String description, String imageUrl, boolean isSoldOut, Integer itemOrder, boolean isRepresentative, boolean isHidden, ItemBadge badge) {
         this.store = store;
         this.name = name;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
         this.isSoldOut = isSoldOut;
+        this.itemOrder = itemOrder;
+        this.isRepresentative = isRepresentative;
+        this.isHidden = isHidden;
+        this.badge = badge;
     }
 
-    public void updateItem(String name, Integer price, String description, String imageUrl, Boolean isSoldOut) {
+    public void updateItem(String name, Integer price, String description, String imageUrl, Boolean isSoldOut, Integer itemOrder, Boolean isRepresentative, Boolean isHidden, ItemBadge badge) {
         if (name != null) {
             this.name = name;
         }
@@ -58,6 +71,18 @@ public class Item extends BaseEntity {
         }
         if (isSoldOut != null) {
             this.isSoldOut = isSoldOut;
+        }
+        if (itemOrder != null) {
+            this.itemOrder = itemOrder;
+        }
+        if (isRepresentative != null) {
+            this.isRepresentative = isRepresentative;
+        }
+        if (isHidden != null) {
+            this.isHidden = isHidden;
+        }
+        if (badge != null) {
+            this.badge = badge;
         }
     }
 }
