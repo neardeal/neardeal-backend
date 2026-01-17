@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CouponVerifyRequest {
+public class VerifyCouponRequest {
 
     @NotBlank(message = "코드는 필수입니다.")
     @Size(min = 4, max = 4, message = "코드는 4자리여야 합니다.")

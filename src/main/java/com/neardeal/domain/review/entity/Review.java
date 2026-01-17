@@ -5,6 +5,8 @@ import com.neardeal.domain.store.entity.Store;
 import com.neardeal.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,16 +47,24 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private int reportCount;
 
+    private boolean isPrivate;
+
+    @Column(nullable = false)
+    private int likeCount;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewImage> images = new ArrayList<>();
+
     @Builder
     public Review(User user, Store store, Review parentReview, boolean isVerified, int rating, String content) {
         this.user = user;
         this.store = store;
         this.parentReview = parentReview;
-        this.isVerified = isVerified;
+        this.isVerified = isVerified; // 쿠폰을 사용한 학생이 작성한 리뷰인지
         this.rating = rating;
         this.content = content;
         this.status = ReviewStatus.PUBLISHED; // 리뷰 첫 생성 시 바로 등록
-        this.reportCount = 0;                 // 리뷰 첫 생성 시 신고 수는 0
+        this.reportCount = 0; // 리뷰 첫 생성 시 신고 수는 0
     }
 
     public void updateReview(String content, Integer rating, Boolean isVerified) {
@@ -82,6 +92,24 @@ public class Review extends BaseEntity {
     // 리뷰 비활성화 (관리자용)
     public void banByAdmin() {
         this.status = ReviewStatus.BANNED;
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void addImage(ReviewImage image) {
+        this.images.add(image);
+    }
+
+    public void removeImage(ReviewImage image) {
+        this.images.remove(image);
     }
 
 }

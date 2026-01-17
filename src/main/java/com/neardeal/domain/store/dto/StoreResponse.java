@@ -2,8 +2,14 @@ package com.neardeal.domain.store.dto;
 
 import com.neardeal.domain.store.entity.Store;
 import com.neardeal.domain.store.entity.StoreCategory;
+import com.neardeal.domain.store.entity.StoreImage;
+import com.neardeal.domain.store.entity.StoreMood;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -17,7 +23,9 @@ public class StoreResponse {
     private String phoneNumber;
     private String introduction;
     private String operatingHours;
-    private StoreCategory storeCategory;
+    private List<StoreCategory> storeCategories;
+    private List<StoreMood> storeMoods;
+    private List<String> imageUrls; // 0번 째 값이 썸네일
 
     public static StoreResponse from(Store store) {
         return StoreResponse.builder()
@@ -30,7 +38,9 @@ public class StoreResponse {
                 .phoneNumber(store.getPhoneNumber())
                 .introduction(store.getIntroduction())
                 .operatingHours(store.getOperatingHours())
-                .storeCategory(store.getStoreCategory())
+                .storeCategories(new ArrayList<>(store.getStoreCategories()))
+                .storeMoods(new ArrayList<>(store.getStoreMoods()))
+                .imageUrls(store.getImages().stream().map(StoreImage::getImageUrl).collect(Collectors.toList()))
                 .build();
     }
 }

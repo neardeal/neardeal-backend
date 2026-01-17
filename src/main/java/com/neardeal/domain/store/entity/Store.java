@@ -5,6 +5,11 @@ import com.neardeal.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,10 +21,6 @@ public class Store extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // Owner
 
     @Column(nullable = false)
     private String name;
@@ -38,13 +39,29 @@ public class Store extends BaseEntity {
     @Lob
     private String operatingHours; // JSON String
 
+    @ElementCollection(targetClass = StoreCategory.class)
+    @CollectionTable(name = "store_categories", joinColumns = @JoinColumn(name = "store_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StoreCategory storeCategory;
+    @Column(name = "category")
+    private Set<StoreCategory> storeCategories = new HashSet<>();
+
+    @ElementCollection(targetClass = StoreMood.class)
+    @CollectionTable(name = "store_moods", joinColumns = @JoinColumn(name = "store_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mood")
+    private Set<StoreMood> storeMoods = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // Owner
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoreImage> images = new ArrayList<>();
+
 
     @Builder
     public Store(User user, String name, String address, Double latitude, Double longitude, String phoneNumber,
-            String introduction, String operatingHours, StoreCategory storeCategory) {
+            String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods) {
         this.user = user;
         this.name = name;
         this.address = address;
@@ -53,11 +70,12 @@ public class Store extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.introduction = introduction;
         this.operatingHours = operatingHours;
-        this.storeCategory = storeCategory;
+        this.storeCategories = storeCategories != null ? storeCategories : new HashSet<>();
+        this.storeMoods = storeMoods != null ? storeMoods : new HashSet<>();
     }
 
     public void updateStore(String name, String address, Double latitude, Double longitude, String phoneNumber,
-            String introduction, String operatingHours, StoreCategory storeCategory) {
+            String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods) {
         if (name != null) {
             this.name = name;
         }
@@ -79,8 +97,22 @@ public class Store extends BaseEntity {
         if (operatingHours != null) {
             this.operatingHours = operatingHours;
         }
-        if (storeCategory != null) {
-            this.storeCategory = storeCategory;
+        if (storeCategories != null) {
+            this.storeCategories.clear();
+            this.storeCategories.addAll(storeCategories);
         }
+        if (storeMoods != null) {
+            this.storeMoods.clear();
+            this.storeMoods.addAll(storeMoods);
+        }
+    }
+
+    // 연관관계 편의 메서드
+    public void addImage(StoreImage image) {
+        this.images.add(image);
+    }
+
+    public void removeImage(StoreImage image) {
+        this.images.remove(image);
     }
 }

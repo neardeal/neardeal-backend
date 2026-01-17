@@ -1,10 +1,14 @@
 package com.neardeal.domain.favorite.dto;
 
 import com.neardeal.domain.store.entity.Store;
+import com.neardeal.domain.store.entity.StoreCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -15,7 +19,7 @@ public class FavoriteStoreResponse {
     private Long storeId;
     private String name;
     private String address;
-    private String storeCategory;
+    private List<StoreCategory> storeCategories;
     private String imageUrl; // 대표이미지
 
     public static FavoriteStoreResponse from(Store store) {
@@ -23,7 +27,7 @@ public class FavoriteStoreResponse {
                 .storeId(store.getId())
                 .name(store.getName())
                 .address(store.getAddress())
-                .storeCategory(store.getStoreCategory().toString())
+                .storeCategories(new ArrayList<>(store.getStoreCategories()))
                 .build();
     }
 }

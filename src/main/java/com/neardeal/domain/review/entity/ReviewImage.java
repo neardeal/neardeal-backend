@@ -1,4 +1,4 @@
-package com.neardeal.domain.store.entity;
+package com.neardeal.domain.review.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,26 +7,26 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StoreImage {
+public class ReviewImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "store_image_id")
+    @Column(name = "review_image_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
+    @JoinColumn(name = "review_id", nullable = false)
+    private Review review;
 
     @Column(nullable = false)
     private String imageUrl;
 
     @Column(nullable = false)
-    private int orderIndex; // 0일 경우 썸네일
+    private int orderIndex; 
 
     @Builder
-    public StoreImage(Store store, String imageUrl, int orderIndex) {
-        this.store = store;
+    public ReviewImage(Review review, String imageUrl, int orderIndex) {
+        this.review = review;
         this.imageUrl = imageUrl;
         this.orderIndex = orderIndex;
     }
