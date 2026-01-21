@@ -4,7 +4,7 @@ import com.neardeal.common.service.S3Service;
 import com.neardeal.common.exception.CustomException;
 import com.neardeal.common.exception.ErrorCode;
 import com.neardeal.domain.coupon.entity.CouponUsageStatus;
-import com.neardeal.domain.coupon.repository.CustomerCouponRepository;
+import com.neardeal.domain.coupon.repository.StudentCouponRepository;
 import com.neardeal.domain.review.dto.*;
 import com.neardeal.domain.review.entity.Review;
 import com.neardeal.domain.review.entity.ReviewImage;
@@ -34,7 +34,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewLikeRepository reviewLikeRepository;
     private final StoreRepository storeRepository;
-    private final CustomerCouponRepository customerCouponRepository;
+    private final StudentCouponRepository studentCouponRepository;
     private final UserRepository userRepository;
     private final ReviewReportRepository reviewReportRepository;
     private final S3Service s3Service;
@@ -48,7 +48,7 @@ public class ReviewService {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 해당 상점에 대한 리뷰를 작성했습니다.");
         }
 
-        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store,
+        boolean isVerified = studentCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store,
                 CouponUsageStatus.USED);
 
         Review review = Review.builder()
@@ -78,7 +78,7 @@ public class ReviewService {
         }
 
         Store store = review.getStore();
-        boolean isVerified = customerCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store,
+        boolean isVerified = studentCouponRepository.existsByUserAndCoupon_StoreAndStatus(user, store,
                 CouponUsageStatus.USED);
 
         review.updateReview(request.getContent(), request.getRating(), isVerified);

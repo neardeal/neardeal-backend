@@ -63,13 +63,13 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .gender(request.getGender())
                 .birthDate(request.getBirthDate())
-                .role(Role.ROLE_CUSTOMER)
+                .role(Role.ROLE_STUDENT)
                 .socialType(SocialType.LOCAL)
                 .build();
 
         userRepository.save(user);
 
-        createCustomerProfile(user, request.getUniversityId(), request.getNickname());
+        createStudentProfile(user, request.getUniversityId(), request.getNickname());
 
         if (request.getCollegeId() != null) {
             Organization college = organizationRepository.findById(request.getCollegeId())
@@ -139,7 +139,7 @@ public class AuthService {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_CUSTOMER)
+                .role(Role.ROLE_STUDENT)
                 .socialType(SocialType.LOCAL)
                 .build();
 
@@ -216,9 +216,9 @@ public class AuthService {
         // 권한 업데이트
         user.changeRole(request.getRole());
 
-        if (request.getRole() == Role.ROLE_CUSTOMER) {
+        if (request.getRole() == Role.ROLE_STUDENT) {
             // 학생 로직
-            createCustomerProfile(user, request.getUniversityId(), request.getNickname());
+            createStudentProfile(user, request.getUniversityId(), request.getNickname());
             
             if (request.getCollegeId() != null) {
                 Organization college = organizationRepository.findById(request.getCollegeId())
@@ -270,7 +270,7 @@ public class AuthService {
         return generateTokenResponse(user);
     }
 
-    private void createCustomerProfile(User user, Long universityId, String nickname) {
+    private void createStudentProfile(User user, Long universityId, String nickname) {
         if (universityId != null) {
             University university = universityRepository.findById(universityId)
                     .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 대학을 찾을 수 없습니다."));

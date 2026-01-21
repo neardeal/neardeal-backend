@@ -81,7 +81,7 @@ public class OrganizationController {
 
     @Operation(summary = "[학생] 소속 가입", description = "학생이 특정 소속에 가입합니다.")
     @PostMapping("/organizations/{organizationId}/membership")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<CommonResponse<Void>> joinOrganization(
             @PathVariable Long organizationId,
             @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -93,7 +93,7 @@ public class OrganizationController {
 
     @Operation(summary = "[학생] 소속 탈퇴", description = "학생이 특정 소속에서 탈퇴합니다.")
     @DeleteMapping("/organizations/{organizationId}/membership")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<CommonResponse<Void>> leaveOrganization(
             @PathVariable Long organizationId,
             @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails

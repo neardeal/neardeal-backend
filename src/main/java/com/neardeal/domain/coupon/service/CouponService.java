@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class CouponService {
 
     private final CouponRepository couponRepository;
-    private final CustomerCouponRepository customerCouponRepository;
+    private final StudentCouponRepository studentCouponRepository;
     private final CouponItemRepository couponItemRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
@@ -117,12 +117,12 @@ public class CouponService {
         validateStoreOwner(store, owner);
 
         // 검증 코드로 우리 가게 활성화 쿠폰 조회
-        CustomerCoupon customerCoupon = customerCouponRepository.findForOwnerVerification(
+        StudentCoupon studentCoupon = studentCouponRepository.findForOwnerVerification(
                 storeId, verificationCode, CouponUsageStatus.ACTIVATED
         ).orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "유효하지 않은 코드이거나 활성화되지 않은 쿠폰입니다."));
 
         // 사용 처리
-        customerCoupon.use();
+        studentCoupon.use();
     }
 
     // --- 공통 ---
@@ -162,41 +162,41 @@ public class CouponService {
             throw new CustomException(ErrorCode.UNPROCESSABLE_ENTITY, "발급 기간이 지났습니다.");
         }
 
-        Integer userCount = customerCouponRepository.countByCouponAndUser(coupon, user);
+        Integer userCount = studentCouponRepository.countByCouponAndUser(coupon, user);
         if (userCount >= coupon.getLimitPerUser()) {
             throw new CustomException(ErrorCode.UNPROCESSABLE_ENTITY, "인당 발급 한도를 초과했습니다.");
         }
 
-        CustomerCoupon customerCoupon = CustomerCoupon.builder()
+        StudentCoupon studentCoupon = StudentCoupon.builder()
                 .user(user)
                 .coupon(coupon)
                 .status(CouponUsageStatus.UNUSED)
                 .expiresAt(now.plusDays(30))
                 .build();
 
-        customerCouponRepository.save(customerCoupon);
+        studentCouponRepository.save(studentCoupon);
 
-        return IssueCouponResponse.from(customerCoupon);
+        return IssueCouponResponse.from(studentCoupon);
     }
 
     @Transactional
-    public String activateCoupon(Long customerCouponId, User user) {
-        CustomerCoupon customerCoupon = customerCouponRepository.findByIdAndUser(customerCouponId, user)
+    public String activateCoupon(Long studentCouponId, User user) {
+        StudentCoupon studentCoupon = studentCouponRepository.findByIdAndUser(studentCouponId, user)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "쿠폰을 찾을 수 없습니다."));
 
-        if (customerCoupon.getStatus() == CouponUsageStatus.USED) {
+        if (studentCoupon.getStatus() == CouponUsageStatus.USED) {
             throw new CustomException(ErrorCode.STATE_CONFLICT, "이미 사용된 쿠폰입니다.");
         }
 
-        if (customerCoupon.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (studentCoupon.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new CustomException(ErrorCode.UNPROCESSABLE_ENTITY, "만료된 쿠폰입니다.");
         }
 
-        return customerCoupon.activate();
+        return studentCoupon.activate();
     }
 
     public List<IssueCouponResponse> getMyCoupons(User user) {
-        return customerCouponRepository.findByUser(user).stream()
+        return studentCouponRepository.findByUser(user).stream()
                 .map(IssueCouponResponse::from)
                 .collect(Collectors.toList());
     }

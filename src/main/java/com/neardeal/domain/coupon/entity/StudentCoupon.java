@@ -13,11 +13,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CustomerCoupon extends BaseEntity {
+public class StudentCoupon extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customer_coupon_id")
+    @Column(name = "student_coupon_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,7 +45,7 @@ public class CustomerCoupon extends BaseEntity {
     private LocalDateTime expiresAt; // 쿠폰 만료 시점
 
     @Builder
-    public CustomerCoupon(User user, Coupon coupon, CouponUsageStatus status, LocalDateTime issuedAt, LocalDateTime expiresAt) {
+    public StudentCoupon(User user, Coupon coupon, CouponUsageStatus status, LocalDateTime issuedAt, LocalDateTime expiresAt) {
         this.user = user;
         this.coupon = coupon;
         this.status = status != null ? status : CouponUsageStatus.UNUSED;

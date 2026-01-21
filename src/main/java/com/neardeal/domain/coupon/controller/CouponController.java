@@ -152,13 +152,13 @@ public class CouponController {
                         @ApiResponse(responseCode = "422", description = "유효기간 만료", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class))),
                         @ApiResponse(responseCode = "404", description = "발급된 쿠폰 없음", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
         })
-        @PostMapping("/my-coupons/{customerCouponId}/activate")
+        @PostMapping("/my-coupons/{studentCouponId}/activate")
         public ResponseEntity<CommonResponse<String>> activateCoupon(
-                @Parameter(description = "사용자 쿠폰 ID (issue ID)") @PathVariable Long customerCouponId,
+                @Parameter(description = "사용자 쿠폰 ID (issue ID)") @PathVariable Long studentCouponId,
                 @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
         )
         {
-                String verificationCode = couponService.activateCoupon(customerCouponId, principalDetails.getUser());
+                String verificationCode = couponService.activateCoupon(studentCouponId, principalDetails.getUser());
                 return ResponseEntity.ok(CommonResponse.success(verificationCode));
         }
 
