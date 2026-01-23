@@ -11,13 +11,17 @@ import com.neardeal.domain.organization.entity.UserOrganization;
 import com.neardeal.domain.organization.repository.OrganizationRepository;
 import com.neardeal.domain.organization.repository.UniversityRepository;
 import com.neardeal.domain.organization.repository.UserOrganizationRepository;
+import com.neardeal.domain.user.entity.CouncilProfile;
+import com.neardeal.domain.user.entity.Role;
 import com.neardeal.domain.user.entity.User;
+import com.neardeal.domain.user.repository.CouncilProfileRepository;
 import com.neardeal.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +33,7 @@ public class OrganizationService {
         private final UniversityRepository universityRepository;
         private final UserOrganizationRepository userOrganizationRepository;
         private final UserRepository userRepository;
+        private final CouncilProfileRepository councilProfileRepository;
 
         // --- 공통 ---
         public List<OrganizationResponse> getOrganizations(Long universityId) {
@@ -44,11 +49,22 @@ public class OrganizationService {
         // --- 관리자 ---
 
         @Transactional
-        public Long createOrganization(Long universityId, CreateOrganizationRequest request) {
+        public Long createOrganization(User user, Long universityId, CreateOrganizationRequest request) {
                 University university = universityRepository.findById(universityId)
                                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "대학을 찾을 수 없습니다."));
 
+
+
                 Organization parent = null;
+
+                // 학생회가 등록할 때
+                if (user.getRole() == Role.ROLE_COUNCIL) {
+                        CouncilProfile councilProfile = councilProfileRepository.findById(user.getId())
+                                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "학생회를 찾을 수 없습니다."));
+                        if (!Objects.equals(councilProfile.getUniversity().getId(), universityId)) {
+                                throw new CustomException(ErrorCode.FORBIDDEN, "자신의 대학에만 소속을 등록할 수 있습니다.");
+                        }
+                }
 
                 // 학과일 때
                 if (request.getParentId() != null) {

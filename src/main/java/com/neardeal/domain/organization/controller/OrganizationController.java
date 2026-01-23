@@ -37,19 +37,20 @@ public class OrganizationController {
         return ResponseEntity.ok(CommonResponse.success(responses));
     }
 
-    // --- 관리자 ---
+    // --- 학생회 ---
 
-    @Operation(summary = "[관리자] 특정 대학에 소속 등록", description = "대학에 새로운 소속(단과대, 학과 등)을 등록합니다.")
+    @Operation(summary = "[학생회] 특정 대학에 소속 등록", description = "대학에 새로운 소속(단과대, 학과 등)을 등록합니다.")
     @PostMapping("/universities/{universityId}/organizations")
     @PreAuthorize("hasAnyRole('ADMIN', 'COUNCIL')")
     public ResponseEntity<CommonResponse<Long>> createOrganization(
+            @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable Long universityId,
             @RequestBody @Valid CreateOrganizationRequest request) {
-        Long organizationId = organizationService.createOrganization(universityId, request);
+        Long organizationId = organizationService.createOrganization(principalDetails.getUser(), universityId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(organizationId));
     }
 
-    @Operation(summary = "[관리자] 소속 수정", description = "소속 정보를 수정합니다.")
+    @Operation(summary = "[학생회] 소속 수정", description = "소속 정보를 수정합니다.")
     @PatchMapping("/organizations/{organizationId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COUNCIL')")
     public ResponseEntity<CommonResponse<Void>> updateOrganization(
@@ -59,7 +60,7 @@ public class OrganizationController {
         return ResponseEntity.ok(CommonResponse.success(null));
     }
 
-    @Operation(summary = "[관리자] 소속 삭제", description = "소속을 삭제합니다.")
+    @Operation(summary = "[학생회] 소속 삭제", description = "소속을 삭제합니다.")
     @DeleteMapping("/organizations/{organizationId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COUNCIL')")
     public ResponseEntity<CommonResponse<Void>> deleteOrganization(
