@@ -139,7 +139,7 @@ public class AuthService {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_STUDENT)
+                .role(Role.ROLE_COUNCIL)
                 .socialType(SocialType.LOCAL)
                 .build();
 
