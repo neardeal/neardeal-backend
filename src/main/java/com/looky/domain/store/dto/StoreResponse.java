@@ -18,8 +18,6 @@ public class StoreResponse {
     private Long userId; // Owner ID
     private String name;
     private String address;
-    private String roadNameAddress;
-    private String numberAddress;
     private Double latitude;
     private Double longitude;
     private String phoneNumber;
@@ -35,8 +33,7 @@ public class StoreResponse {
                 .id(store.getId())
                 .userId(store.getUser().getId())
                 .name(store.getName())
-                .roadNameAddress(store.getRoadNameAddress())
-                .numberAddress(store.getNumberAddress())
+                .address(store.getAddress())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
                 .phoneNumber(store.getPhoneNumber())

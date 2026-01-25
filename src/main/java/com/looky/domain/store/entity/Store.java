@@ -31,10 +31,7 @@ public class Store extends BaseEntity {
     private String businessNumber; // 사업자등록번호
 
     @Column(nullable = false)
-    private String roadNameAddress; // 도로명 주소
-
-    @Column(nullable = false)
-    private String numberAddress; // 지번 주소
+    private String address; // 도로명 주소
 
     private Double latitude; // 위도
 
@@ -74,11 +71,11 @@ public class Store extends BaseEntity {
     private List<StoreImage> images = new ArrayList<>();
 
     @Builder
-    public Store(User user, String name, String roadNameAddress, String businessNumber, Double latitude, Double longitude, String phoneNumber,
+    public Store(User user, String name, String address, String businessNumber, Double latitude, Double longitude, String phoneNumber,
                  String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods, StoreStatus storeStatus) {
         this.user = user;
         this.name = name;
-        this.roadNameAddress = roadNameAddress;
+        this.address = address;
         this.businessNumber = businessNumber;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -96,7 +93,7 @@ public class Store extends BaseEntity {
             this.name = name;
         }
         if (address != null) {
-            this.roadNameAddress = address;
+            this.address = address;
         }
         if (latitude != null) {
             this.latitude = latitude;

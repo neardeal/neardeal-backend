@@ -69,18 +69,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        createStudentProfile(user, request.getUniversityId(), request.getNickname());
-
-        if (request.getCollegeId() != null) {
-            Organization college = organizationRepository.findById(request.getCollegeId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 단과대학을 찾을 수 없습니다."));
-            userOrganizationRepository.save(new UserOrganization(user, college));
-        }
-        if (request.getDepartmentId() != null) {
-            Organization department = organizationRepository.findById(request.getDepartmentId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 학과를 찾을 수 없습니다."));
-            userOrganizationRepository.save(new UserOrganization(user, department));
-        }
+        createStudentProfile(user, request.getUniversityId(), request.getNickname(), request.getCollegeId(), request.getDepartmentId());
 
         return user.getId();
     }
@@ -102,30 +91,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        createOwnerProfile(user, request);
-
-        // Stores
-        if (request.getStoreList() != null) {
-            for (OwnerSignupRequest.StoreCreateRequest storeReq : request.getStoreList()) {
-                Store store = Store.builder()
-                        .user(user)
-                        .name(storeReq.getName())
-                        .address(storeReq.getAddress())
-                        .businessRegistrationNumber(storeReq.getBusinessRegistrationNumber())
-                        .build();
-                storeRepository.save(store);
-
-                storeRepository.save(store);
-
-                if (storeReq.getPartnerOrganizationIds() != null) {
-                    for (Long orgId : storeReq.getPartnerOrganizationIds()) {
-                        Organization org = organizationRepository.findById(orgId)
-                                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "제휴 단체를 찾을 수 없습니다."));
-                        partnershipRepository.save(new Partnership(store, org, null));
-                    }
-                }
-            }
-        }
+        createOwnerProfile(user, request.getName(), request.getEmail(), request.getPhoneNumber());
 
         return user.getId();
     }
@@ -218,49 +184,11 @@ public class AuthService {
 
         if (request.getRole() == Role.ROLE_STUDENT) {
             // 학생 로직
-            createStudentProfile(user, request.getUniversityId(), request.getNickname());
-            
-            if (request.getCollegeId() != null) {
-                Organization college = organizationRepository.findById(request.getCollegeId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 단과대학을 찾을 수 없습니다."));
-                userOrganizationRepository.save(new UserOrganization(user, college));
-            }
-            if (request.getDepartmentId() != null) {
-                Organization department = organizationRepository.findById(request.getDepartmentId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 학과를 찾을 수 없습니다."));
-                userOrganizationRepository.save(new UserOrganization(user, department));
-            }
-            
+            createStudentProfile(user, request.getUniversityId(), request.getNickname(), request.getCollegeId(), request.getDepartmentId());
         } else if (request.getRole() == Role.ROLE_OWNER) {
             // 점주 로직
-            OwnerProfile profile = OwnerProfile.builder()
-                    .user(user)
-                    .name(request.getName())
-                    .email(request.getEmail())
-                    .phoneNumber(request.getPhoneNumber())
-                    .build();
-            ownerProfileRepository.save(profile);
+            createOwnerProfile(user, request.getName(), request.getEmail(), request.getPhoneNumber());
 
-            // 상점 임시 등록
-            if (request.getStoreList() != null) {
-                for (OwnerSignupRequest.StoreCreateRequest storeReq : request.getStoreList()) {
-                     Store store = Store.builder()
-                             .user(user)
-                             .name(storeReq.getName())
-                             .address(storeReq.getAddress())
-                             .businessRegistrationNumber(storeReq.getBusinessRegistrationNumber())
-                             .build();
-                     storeRepository.save(store);
-                     
-                     if (storeReq.getPartnerOrganizationIds() != null) {
-                         for (Long orgId : storeReq.getPartnerOrganizationIds()) {
-                             Organization org = organizationRepository.findById(orgId)
-                                     .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "제휴 단체를 찾을 수 없습니다."));
-                             partnershipRepository.save(new Partnership(store, org, null));
-                         }
-                     }
-                }
-            }
         } else if (request.getRole() == Role.ROLE_COUNCIL) {
             // 학생회 로직
             createCouncilProfile(user, request.getUniversityId());
@@ -270,33 +198,40 @@ public class AuthService {
         return generateTokenResponse(user);
     }
 
-    private void createStudentProfile(User user, Long universityId, String nickname) {
-        if (universityId != null) {
-            University university = universityRepository.findById(universityId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 대학을 찾을 수 없습니다."));
-            StudentProfile profile = StudentProfile.builder()
-                    .user(user)
-                    .university(university)
-                    .nickname(nickname)
-                    .build();
-            studentProfileRepository.save(profile);
-        } else {
-            // 대학생 아닌 고객 가입
-            StudentProfile profile = StudentProfile.builder()
-                    .user(user)
-                    .nickname(nickname)
-                    .build();
-            studentProfileRepository.save(profile);
+    private void createStudentProfile(User user, Long universityId, String nickname, Long collegeId, Long departmentId) {
+
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 대학을 찾을 수 없습니다."));
+
+        if (collegeId != null) {
+            Organization college = organizationRepository.findById(collegeId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 단과대학을 찾을 수 없습니다."));
+            userOrganizationRepository.save(new UserOrganization(user, college));
         }
+
+        if (departmentId != null) {
+            Organization department = organizationRepository.findById(departmentId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 학과를 찾을 수 없습니다."));
+            userOrganizationRepository.save(new UserOrganization(user, department));
+        }
+
+        StudentProfile profile = StudentProfile.builder()
+                .user(user)
+                .university(university)
+                .nickname(nickname)
+                .build();
+        studentProfileRepository.save(profile);
+
+
 
     }
 
-    private void createOwnerProfile(User user, OwnerSignupRequest request) {
+    private void createOwnerProfile(User user, String name, String email, String phoneNumber) {
         OwnerProfile profile = OwnerProfile.builder()
                 .user(user)
-                .name(request.getName())
-                .email(request.getEmail())
-                .phoneNumber(request.getPhoneNumber())
+                .name(name)
+                .email(email)
+                .phoneNumber(phoneNumber)
                 .build();
         ownerProfileRepository.save(profile);
     }

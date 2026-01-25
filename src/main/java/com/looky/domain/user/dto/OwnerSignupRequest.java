@@ -33,6 +33,6 @@ public class OwnerSignupRequest {
         private String address;
         private Long partnerUniversityId;
         private List<Long> partnerOrganizationIds;
-        private String businessRegistrationNumber;
+        private String businessNumber;
     }
 }
