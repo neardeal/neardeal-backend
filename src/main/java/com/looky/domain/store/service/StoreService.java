@@ -56,7 +56,7 @@ public class StoreService {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 등록된 상점 이름입니다.");
         }
 
-        if (storeRepository.existsByBusinessRegistrationNumber(request.getBusinessNumber())) {
+        if (storeRepository.existsByBusinessNumber(request.getBusinessNumber())) {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 등록된 사업자등록번호입니다.");
         }
 
