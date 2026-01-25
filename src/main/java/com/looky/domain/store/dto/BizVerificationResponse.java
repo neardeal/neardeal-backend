@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true) // 정의되지 않은 필드 무시
-public class BusinessVerificationResponse {
+public class BizVerificationResponse {
 
     @JsonProperty("status_code")
     private String statusCode;
@@ -23,12 +23,12 @@ public class BusinessVerificationResponse {
     @JsonProperty("request_cnt")
     private Integer requestCnt;
 
-    private List<BusinessStatus> data;
+    private List<BizStatus> data;
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class BusinessStatus {
+    public static class BizStatus {
 
         // 사업자 등록 번호 (입력한 번호)
         @JsonProperty("b_no")

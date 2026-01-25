@@ -24,8 +24,8 @@ public class StoreClaimRequest extends BaseEntity {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
-    private String businessNumber;
+    @Column(name = "biz_reg_no", nullable = false)
+    private String bizRegNo;
 
     @Column(nullable = false)
     private String representativeName; // 대표자명

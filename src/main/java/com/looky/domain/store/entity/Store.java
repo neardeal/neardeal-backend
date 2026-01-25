@@ -28,7 +28,8 @@ public class Store extends BaseEntity {
     
     private String branch; // 지점명
 
-    private String businessNumber; // 사업자등록번호
+    @Column(name = "biz_reg_no")
+    private String bizRegNo; // 사업자등록번호
 
     @Column(nullable = false)
     private String address; // 도로명 주소
@@ -71,12 +72,12 @@ public class Store extends BaseEntity {
     private List<StoreImage> images = new ArrayList<>();
 
     @Builder
-    public Store(User user, String name, String address, String businessNumber, Double latitude, Double longitude, String phoneNumber,
+    public Store(User user, String name, String address, String bizRegNo, Double latitude, Double longitude, String phoneNumber,
                  String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods, StoreStatus storeStatus) {
         this.user = user;
         this.name = name;
         this.address = address;
-        this.businessNumber = businessNumber;
+        this.bizRegNo = bizRegNo;
         this.latitude = latitude;
         this.longitude = longitude;
         this.phoneNumber = phoneNumber;

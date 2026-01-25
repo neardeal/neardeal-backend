@@ -2,8 +2,8 @@ package com.looky.domain.store.service;
 
 import com.looky.common.exception.CustomException;
 import com.looky.common.exception.ErrorCode;
-import com.looky.domain.store.dto.BusinessVerificationRequest;
-import com.looky.domain.store.dto.BusinessVerificationResponse;
+import com.looky.domain.store.dto.BizVerificationRequest;
+import com.looky.domain.store.dto.BizVerificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -26,7 +26,7 @@ public class StoreVerificationService {
 
     private static final String API_URL = "https://api.odcloud.kr/api/nts-businessman/v1/validate";
 
-    public BusinessVerificationResponse verifyBusiness(BusinessVerificationRequest request) {
+    public BizVerificationResponse verifyBizRegNo(BizVerificationRequest request) {
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -38,17 +38,17 @@ public class StoreVerificationService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        HttpEntity<BusinessVerificationRequest> entity = new HttpEntity<>(request, headers);
+        HttpEntity<BizVerificationRequest> entity = new HttpEntity<>(request, headers);
 
         try {
-            ResponseEntity<BusinessVerificationResponse> responseEntity = restTemplate.postForEntity(uri, entity,
-                    BusinessVerificationResponse.class);
+            ResponseEntity<BizVerificationResponse> responseEntity = restTemplate.postForEntity(uri, entity,
+                    BizVerificationResponse.class);
 
-            BusinessVerificationResponse response = responseEntity.getBody();
+            BizVerificationResponse response = responseEntity.getBody();
 
             if (response != null && response.getData() != null && !response.getData().isEmpty()) {
 
-                BusinessVerificationResponse.BusinessStatus status = response.getData().get(0);
+                BizVerificationResponse.BizStatus status = response.getData().get(0);
 
                 // 국세청 등록 정보 일치 여부 확인
                 if (!"01".equals(status.getValid())) {

@@ -13,15 +13,15 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class BusinessVerificationRequest {
+public class BizVerificationRequest {
 
-    private List<BusinessInfo> businesses;
+    private List<BizInfo> bizs;
 
     @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
-    public static class BusinessInfo {
+    public static class BizInfo {
         @JsonProperty("b_no")
         private String bNo; // 사업자등록번호
 
