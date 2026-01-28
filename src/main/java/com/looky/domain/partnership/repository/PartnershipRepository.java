@@ -16,4 +16,7 @@ public interface PartnershipRepository extends JpaRepository<Partnership, Long> 
     List<Partnership> findAllWithStoreAndOrganization();
 
     boolean existsByStoreIdAndOrganizationId(Long storeId, Long organizationId);
+
+    // 복합키 조회용
+    Partnership findByStoreIdAndOrganizationId(Long storeId, Long organizationId);
 }

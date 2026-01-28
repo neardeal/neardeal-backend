@@ -11,4 +11,7 @@ public interface UserOrganizationRepository extends JpaRepository<UserOrganizati
     boolean existsByUserAndOrganization(User user, Organization organization);
 
     Optional<UserOrganization> findByUserAndOrganization(User user, Organization organization);
+
+    // 유저의 소속 단체 조회 (학생회용)
+    Optional<UserOrganization> findByUser(User user);
 }
