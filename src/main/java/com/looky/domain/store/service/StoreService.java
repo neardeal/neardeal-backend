@@ -2,6 +2,9 @@ package com.looky.domain.store.service;
 
 import com.looky.common.service.S3Service;
 import com.looky.domain.store.entity.StoreCategory;
+import com.looky.domain.store.entity.StoreMood;
+import com.looky.domain.store.repository.StoreSpecification;
+import org.springframework.data.jpa.domain.Specification;
 
 import com.looky.common.exception.CustomException;
 import com.looky.common.exception.ErrorCode;
@@ -77,18 +80,12 @@ public class StoreService {
         return StoreResponse.from(store);
     }
 
-    public PageResponse<StoreResponse> getStores(String keyword, StoreCategory category, Pageable pageable) {
-        Page<Store> storePage;
+    public PageResponse<StoreResponse> getStores(String keyword, List<StoreCategory> categories, List<StoreMood> moods, Pageable pageable) {
+        Specification<Store> spec = Specification.where(StoreSpecification.hasKeyword(keyword))
+                .and(StoreSpecification.hasCategories(categories))
+                .and(StoreSpecification.hasMoods(moods));
 
-        if (keyword != null && category != null) {
-            storePage = storeRepository.findByNameContainingAndStoreCategoriesContains(keyword, category, pageable);
-        } else if (keyword != null) {
-            storePage = storeRepository.findByNameContaining(keyword, pageable);
-        } else if (category != null) {
-            storePage = storeRepository.findByStoreCategoriesContains(category, pageable);
-        } else {
-            storePage = storeRepository.findAll(pageable);
-        }
+        Page<Store> storePage = storeRepository.findAll(spec, pageable);
 
         Page<StoreResponse> responsePage = storePage.map(StoreResponse::from);
         return PageResponse.from(responsePage);

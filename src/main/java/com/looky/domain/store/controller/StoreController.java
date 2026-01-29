@@ -1,6 +1,7 @@
 package com.looky.domain.store.controller;
 
 import com.looky.domain.store.entity.StoreCategory;
+import com.looky.domain.store.entity.StoreMood;
 
 import com.looky.common.response.SwaggerErrorResponse;
 import com.looky.common.response.CommonResponse;
@@ -72,10 +73,11 @@ public class StoreController {
         @GetMapping
         public ResponseEntity<CommonResponse<PageResponse<StoreResponse>>> getStores(
                 @Parameter(description = "검색 키워드 (상점 이름)") @RequestParam(required = false) String keyword,
-                @Parameter(description = "카테고리 필터") @RequestParam(required = false) StoreCategory category,
+                @Parameter(description = "카테고리 필터 (복수 선택 가능)") @RequestParam(required = false) List<StoreCategory> categories,
+                @Parameter(description = "분위기 필터 (복수 선택 가능)") @RequestParam(required = false) List<StoreMood> moods,
                 @Parameter(description = "페이징 정보 (page, size, sort)") @PageableDefault(size = 10) Pageable pageable
         ) {
-                PageResponse<StoreResponse> response = storeService.getStores(keyword, category, pageable);
+                PageResponse<StoreResponse> response = storeService.getStores(keyword, categories, moods, pageable);
                 return ResponseEntity.ok(CommonResponse.success(response));
         }
 
