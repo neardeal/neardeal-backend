@@ -79,7 +79,7 @@ public class SecurityConfig {
                 // 세션 설정
                 http
                         .sessionManagement((session) -> session
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
                 // CORS 설정
                 http
@@ -90,9 +90,9 @@ public class SecurityConfig {
                         .authorizeHttpRequests((auth) -> auth
                                 .requestMatchers("/api/auth/**", "/reissue", "/docs", "/swagger-ui/**", "/v3/api-docs/**", "/health")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/items/**")
+                                .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/items/**", "/api/universities/*/organizations")
                                 .permitAll()
-                                //.requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated());
 
                 http.oauth2Login(oauth2 -> oauth2
