@@ -3,7 +3,7 @@ name: Prod Deploy Workflow
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # 수동 실행 버튼 활성화
+  workflow_dispatch:
 
 jobs:
   deploy:
