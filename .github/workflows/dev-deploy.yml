@@ -3,6 +3,7 @@ name: Dev Deploy Workflow
 on:
   push:
     branches: [ dev ]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -10,7 +11,9 @@ jobs:
     environment: Development  # Development 환경의 Secret을 가져옴
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -39,23 +42,22 @@ jobs:
           port: 22
           envs: ENV_FILE
           script: |
+            # [중요] Base64로 인코딩된 Secret을 풀어서 .env.dev 파일 생성
+            echo "$ENV_FILE" | base64 -d > .env.dev
             
-            # 1. 환경변수 파일 생성 (.env.dev)
-            echo "$ENV_FILE" > .env.dev
-            
-            # 2. 이미지 Pull
+            # 이미지 Pull
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/looky-backend:dev
             
-            # 3. 기존 Dev 컨테이너 중지/삭제
+            # 기존 Dev 컨테이너 중지/삭제
             sudo docker stop looky-dev || true
             sudo docker rm looky-dev || true
             
-            # 4. Dev 컨테이너 실행
-            sudo docker run -d --name looky-dev -p 8080:8080 \
+            # Dev 컨테이너 실행 
+            sudo docker run -d --name looky-dev -p 8081:8080 \
               --env-file .env.dev \
               ${{ secrets.DOCKER_USERNAME }}/looky-backend:dev
             
-            # 5. 청소
+            # 청소
             sudo docker image prune -f
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}

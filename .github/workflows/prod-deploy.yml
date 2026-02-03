@@ -40,8 +40,9 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
+          envs: ENV_FILE
           script: |
-            echo "$ENV_FILE" > .env.prod
+            echo "$ENV_FILE" | base64 -d > .env.prod
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/looky-backend:prod
             sudo docker stop looky-prod || true
             sudo docker rm looky-prod || true
