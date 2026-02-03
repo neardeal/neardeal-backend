@@ -12,16 +12,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+          uses: actions/setup-java@v3
+          with:
+            java-version: '17'
+            distribution: 'temurin'
 
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
+          - name: Build with Gradle
+            run: |
+              chmod +x gradlew
+              ./gradlew clean build -x test
 
-      - name: Docker Login
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          - name: Docker Login
+            run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Docker Build & Push (Prod Tag)
         run: |
