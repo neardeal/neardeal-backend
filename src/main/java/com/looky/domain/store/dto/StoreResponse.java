@@ -32,7 +32,7 @@ public class StoreResponse {
     public static StoreResponse from(Store store) {
         return StoreResponse.builder()
                 .id(store.getId())
-                .userId(store.getUser() != null ? store.getUser().getId() : null) // User can be null now
+                .userId(store.getUser() != null ? store.getUser().getId() : null)
                 .name(store.getName())
                 .roadAddress(store.getRoadAddress())
                 .jibunAddress(store.getJibunAddress())
