@@ -48,8 +48,8 @@ jobs:
           envs: ENV_FILE
           script: |
             
-            # Base64로 인코딩된 Secret을 풀어서 .env.dev 파일 생성
-            echo "$ENV_FILE" | base64 -d > .env.
+            # Base64로 인코딩된 Secret을 풀어서 .env.prod 파일 생성
+            echo "$ENV_FILE" | base64 -d > .env.prod
             
             # 이미지 Pull
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/looky-backend:prod
