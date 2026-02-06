@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PartnershipRepository extends JpaRepository<Partnership, Long> {
@@ -34,5 +35,17 @@ public interface PartnershipRepository extends JpaRepository<Partnership, Long> 
     List<Partnership> findAllByOrganizationIdAndOrganizationUniversityId(
             @Param("organizationId") Long organizationId,
             @Param("universityId") Long universityId
+    );
+
+
+    @Query("SELECT p FROM Partnership p " +
+           "JOIN FETCH p.organization o " +
+           "WHERE p.store.id IN :storeIds " +
+           "AND o.university.id = :universityId " +
+           "AND p.startsAt <= :today AND p.endsAt >= :today")
+    List<Partnership> findActivePartnershipsByStoreIdsAndUniversityId(
+            @Param("storeIds") List<Long> storeIds,
+            @Param("universityId") Long universityId,
+            @Param("today") LocalDate today
     );
 }

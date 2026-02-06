@@ -181,4 +181,17 @@ public class StoreController {
                 return ResponseEntity.ok(CommonResponse.success(null));
         }
 
+    @Operation(summary = "[학생] 이번 주 핫한 가게 조회", description = "학생의 소속 대학에서 이번 주 찜이 가장 많이 늘어난 상점 Top 10을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "403", description = "권한 없음 (학생 아님/대학 미소속)", content = @Content(schema = @Schema(implementation = SwaggerErrorResponse.class)))
+    })
+    @GetMapping("/hot")
+    public ResponseEntity<CommonResponse<List<HotStoreResponse>>> getHotStores(
+            @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        List<HotStoreResponse> response = storeService.getHotStores(principalDetails.getUser());
+        return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
 }

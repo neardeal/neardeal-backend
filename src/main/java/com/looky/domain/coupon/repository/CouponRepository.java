@@ -19,8 +19,19 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
            "AND c.issueStartsAt BETWEEN :startOfDay AND :endOfDay " +
            "AND p.startsAt <= :today AND p.endsAt >= :today " +
            "ORDER BY c.issueStartsAt DESC")
-    List<Coupon> findTodayCouponsByUniversity(@Param("universityId") Long universityId,
-                                              @Param("startOfDay") LocalDateTime startOfDay,
-                                              @Param("endOfDay") LocalDateTime endOfDay,
-                                              @Param("today") LocalDate today);
+    List<Coupon> findTodayCouponsByUniversity(
+            @Param("universityId") Long universityId,
+            @Param("startOfDay") LocalDateTime startOfDay,
+            @Param("endOfDay") LocalDateTime endOfDay,
+            @Param("today") LocalDate today
+    );
+
+    @Query("SELECT c FROM Coupon c " +
+           "WHERE c.store.id IN :storeIds " +
+           "AND c.issueStartsAt <= :now AND c.issueEndsAt >= :now " +
+           "AND c.status = 'ACTIVE'")
+    List<Coupon> findActiveCouponsByStoreIds(
+            @Param("storeIds") List<Long> storeIds,
+            @Param("now") LocalDateTime now
+    );
 }

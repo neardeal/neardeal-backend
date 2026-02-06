@@ -36,6 +36,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import com.looky.domain.favorite.repository.FavoriteRepository;
+import com.looky.domain.user.entity.StudentProfile;
+import com.looky.domain.user.repository.StudentProfileRepository;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
+import com.looky.domain.partnership.repository.PartnershipRepository;
+import com.looky.domain.coupon.repository.CouponRepository;
+import com.looky.domain.partnership.entity.Partnership;
+import com.looky.domain.coupon.entity.Coupon;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.Collections;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -48,6 +64,10 @@ public class StoreService {
     private final ItemRepository itemRepository;
     private final S3Service s3Service;
     private final ReviewRepository reviewRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final StudentProfileRepository studentProfileRepository;
+    private final PartnershipRepository partnershipRepository;
+    private final CouponRepository couponRepository;
 
     @Transactional
     public Long createStore(User user, CreateStoreRequest request, List<MultipartFile> images) throws IOException {
@@ -293,5 +313,69 @@ public class StoreService {
                 && store.getStoreMoods() != null && !store.getStoreMoods().isEmpty();
 
         return StoreRegistrationStatusResponse.of(hasMenu, hasStoreInfo);
+    }
+
+    public List<HotStoreResponse> getHotStores(User user) {
+        StudentProfile studentProfile = studentProfileRepository.findById(user.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.FORBIDDEN, "학생 회원만 이용 가능합니다."));
+
+        if (studentProfile.getUniversity() == null) {
+             throw new CustomException(ErrorCode.FORBIDDEN, "소속 대학이 없습니다.");
+        }
+
+        Long universityId = studentProfile.getUniversity().getId();
+
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        LocalDate today = now.toLocalDate();
+        LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        // 1. 핫한 상점 조회 (Object[]: Store, Long count) - 이번 주 찜이 가장 많이 늘어난 상점 Top 10 조회
+        List<Object[]> results = favoriteRepository.findHotStores(universityId, startOfWeek, endOfWeek, Pageable.ofSize(10));
+
+        if (results.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Store> stores = results.stream()
+                .map(result -> (Store) result[0])
+                .toList();
+        List<Long> storeIds = stores.stream().map(Store::getId).toList();
+
+        // 2. 활성화된 제휴 정보 일괄 조회 (N+1 방지)
+        // 해당 대학과 제휴 맺은 상점들의 현재 유효한 제휴 정보를 조회
+        List<Partnership> partnerships = partnershipRepository.findActivePartnershipsByStoreIdsAndUniversityId(storeIds, universityId, today);
+        Map<Long, List<Partnership>> partnershipMap = partnerships.stream()
+                .collect(Collectors.groupingBy(p -> p.getStore().getId()));
+
+        // 3. 활성화된 쿠폰 정보 일괄 조회 (N+1 방지)
+        // 상점들의 현재 유효한 쿠폰 정보를 조회
+        List<Coupon> coupons = couponRepository.findActiveCouponsByStoreIds(storeIds, now);
+        Map<Long, List<Coupon>> couponMap = coupons.stream()
+                .collect(Collectors.groupingBy(c -> c.getStore().getId()));
+
+
+        // 4. 응답 객체로 매핑 (혜택 우선순위 적용)
+        return results.stream()
+                .map(result -> {
+                    Store store = (Store) result[0];
+                    Long count = (Long) result[1];
+                    Long storeId = store.getId();
+                    String benefitContent = null;
+
+                    // 우선순위 1: 제휴 혜택 (소속 대학과 제휴된 경우)
+                    if (partnershipMap.containsKey(storeId) && !partnershipMap.get(storeId).isEmpty()) {
+                        benefitContent = partnershipMap.get(storeId).get(0).getBenefit();
+                    } 
+                    // 우선순위 2: 쿠폰 혜택 (제휴가 없고, 발급 가능한 쿠폰이 있는 경우)
+                    else if (couponMap.containsKey(storeId) && !couponMap.get(storeId).isEmpty()) {
+                        benefitContent = couponMap.get(storeId).get(0).getTitle();
+                    }
+
+                    return HotStoreResponse.from(store, count, benefitContent);
+                })
+                .toList();
     }
 }
