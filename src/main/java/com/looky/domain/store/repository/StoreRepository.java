@@ -26,6 +26,7 @@ public interface StoreRepository extends JpaRepository<Store, Long>, JpaSpecific
         "SELECT *, " +
         "(6371 * acos(cos(radians(:latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(latitude)))) AS distance " +
         "FROM store " +
+        "WHERE is_suspended = false " +
         "HAVING distance <= :radius " +
         "ORDER BY distance",
         nativeQuery = true)

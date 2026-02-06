@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -77,8 +78,17 @@ public class Store extends BaseEntity {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreImage> images = new ArrayList<>();
 
+    @Column(name = "holiday_starts_at")
+    private LocalDate holidayStartsAt; // 휴무 시작일
+
+    @Column(name = "holiday_ends_at")
+    private LocalDate holidayEndsAt; // 휴무 종료일
+
+    @Column(nullable = false)
+    private Boolean isSuspended = false; // 영업 중지 여부
+
     @Builder
-    public Store(User user, String name, String branch, String roadAddress, String jibunAddress, String bizRegNo, Double latitude, Double longitude, String storePhone, String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods, StoreStatus storeStatus, Boolean needToCheck, String checkReason) {
+    public Store(User user, String name, String branch, String roadAddress, String jibunAddress, String bizRegNo, Double latitude, Double longitude, String storePhone, String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods, StoreStatus storeStatus, Boolean needToCheck, String checkReason, LocalDate holidayStartsAt, LocalDate holidayEndsAt, Boolean isSuspended) {
         this.user = user;
         this.name = name;
         this.branch = branch;
@@ -95,9 +105,12 @@ public class Store extends BaseEntity {
         this.storeStatus = storeStatus != null ? storeStatus : StoreStatus.UNCLAIMED;
         this.needToCheck = needToCheck;
         this.checkReason = checkReason;
+        this.holidayStartsAt = holidayStartsAt;
+        this.holidayEndsAt = holidayEndsAt;
+        this.isSuspended = isSuspended != null ? isSuspended : false;
     }
 
-    public void updateStore(String name, String branch, String roadAddress, String jibunAddress, Double latitude, Double longitude, String phone, String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods) {
+    public void updateStore(String name, String branch, String roadAddress, String jibunAddress, Double latitude, Double longitude, String phone, String introduction, String operatingHours, Set<StoreCategory> storeCategories, Set<StoreMood> storeMoods, LocalDate holidayStartsAt, LocalDate holidayEndsAt, Boolean isSuspended) {
         if (name != null) {
             this.name = name;
         }
@@ -132,6 +145,15 @@ public class Store extends BaseEntity {
         if (storeMoods != null) {
             this.storeMoods.clear();
             this.storeMoods.addAll(storeMoods);
+        }
+        if (holidayStartsAt != null) {
+            this.holidayStartsAt = holidayStartsAt;
+        }
+        if (holidayEndsAt != null) {
+            this.holidayEndsAt = holidayEndsAt;
+        }
+        if (isSuspended != null) {
+            this.isSuspended = isSuspended;
         }
     }
 

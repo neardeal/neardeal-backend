@@ -125,6 +125,9 @@ create table store (
     introduction longtext,
     operating_hours longtext,
     store_status enum ('ACTIVE','BANNED','UNCLAIMED') not null,
+    holiday_starts_at date,
+    holiday_ends_at date,
+    is_suspended bit default 0 not null,
     user_id bigint,
     foreign key (user_id) references user (user_id)
 );

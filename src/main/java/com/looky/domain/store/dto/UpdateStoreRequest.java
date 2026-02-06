@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
@@ -33,4 +34,8 @@ public class UpdateStoreRequest {
     private List<StoreCategory> storeCategories;
 
     private List<StoreMood> storeMoods;
+
+    private LocalDate holidayStartsAt;
+    private LocalDate holidayEndsAt;
+    private Boolean isSuspended;
 }

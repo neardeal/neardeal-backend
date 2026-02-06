@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,9 @@ public class StoreResponse {
     private List<String> imageUrls; // 0번 째 값이 썸네일
     private Double averageRating;
     private Integer reviewCount;
+    private LocalDate holidayStartsAt;
+    private LocalDate holidayEndsAt;
+    private Boolean isSuspended;
 
     public static StoreResponse of(Store store, Double averageRating, Integer reviewCount) {
         return StoreResponse.builder()
@@ -49,6 +53,9 @@ public class StoreResponse {
                 .imageUrls(store.getImages().stream().map(StoreImage::getImageUrl).collect(Collectors.toList()))
                 .averageRating(averageRating != null ? averageRating : 0.0)
                 .reviewCount(reviewCount != null ? reviewCount : 0)
+                .holidayStartsAt(store.getHolidayStartsAt())
+                .holidayEndsAt(store.getHolidayEndsAt())
+                .isSuspended(store.getIsSuspended())
                 .build();
     }
 

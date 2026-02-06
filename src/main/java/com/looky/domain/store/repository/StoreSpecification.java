@@ -51,4 +51,8 @@ public class StoreSpecification {
             return cb.equal(universityJoin.get("university").get("id"), universityId);
         };
     }
+
+    public static Specification<Store> isNotSuspended() {
+        return (root, query, cb) -> cb.isFalse(root.get("isSuspended"));
+    }
 }

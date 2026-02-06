@@ -91,7 +91,8 @@ public class StoreService {
         Specification<Store> spec = Specification.where(StoreSpecification.hasKeyword(keyword))
                 .and(StoreSpecification.hasCategories(categories))
                 .and(StoreSpecification.hasMoods(moods))
-                .and(StoreSpecification.hasUniversityId(universityId));
+                .and(StoreSpecification.hasUniversityId(universityId))
+                .and(StoreSpecification.isNotSuspended());
 
         Page<Store> storePage = storeRepository.findAll(spec, pageable);
 
@@ -133,7 +134,10 @@ public class StoreService {
             request.getIntroduction(),
             request.getOperatingHours(),
             request.getStoreCategories() != null ? new HashSet<>(request.getStoreCategories()) : null,
-            request.getStoreMoods() != null ? new HashSet<>(request.getStoreMoods()) : null
+            request.getStoreMoods() != null ? new HashSet<>(request.getStoreMoods()) : null,
+            request.getHolidayStartsAt(),
+            request.getHolidayEndsAt(),
+            request.getIsSuspended()
         );
 
         // 새 이미지가 존재하면 기존 것 모두 삭제 후 새로 등록
