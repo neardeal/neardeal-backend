@@ -115,6 +115,21 @@ public class CouponController {
                 return ResponseEntity.ok(CommonResponse.success(response));
         }
 
+        // --- 학생용 ---
+
+        @Operation(summary = "[학생] 오늘의 신규 쿠폰 조회", description = "학생의 학교와 제휴된 매장에서 오늘 발급된 쿠폰 목록을 조회합니다.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "성공"),
+                @ApiResponse(responseCode = "403", description = "학생 권한 필요")
+        })
+        @GetMapping("/today")
+        public ResponseEntity<CommonResponse<List<CouponResponse>>> getTodayCoupons(
+                @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
+        ) {
+                List<CouponResponse> response = couponService.getTodayCoupons(principalDetails.getUser());
+                return ResponseEntity.ok(CommonResponse.success(response));
+        }
+
         @Operation(summary = "[학생] 쿠폰 발급", description = "사용자가 쿠폰을 발급받습니다.")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "쿠폰 발급 성공"),

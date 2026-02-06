@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.looky.domain.user.entity.StudentProfile;
+import com.looky.domain.user.repository.StudentProfileRepository;
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,6 +32,7 @@ public class CouponService {
     private final StudentCouponRepository studentCouponRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final StudentProfileRepository studentProfileRepository;
 
     // --- 점주용 ---
 
@@ -104,9 +109,44 @@ public class CouponService {
         studentCoupon.use();
     }
 
+    // --- 학생용 ---
 
+    // 오늘 발급한 쿠폰 조회
+    public List<CouponResponse> getTodayCoupons(User user) {
+        if (user.getRole() != Role.ROLE_STUDENT) {
+            throw new CustomException(ErrorCode.FORBIDDEN, "학생만 이용 가능한 서비스입니다.");
+        }
 
-    // --- 공통 ---
+        StudentProfile studentProfile = studentProfileRepository.findById(user.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "학생 프로필을 찾을 수 없습니다."));
+
+        Long universityId = studentProfile.getUniversity().getId();
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(23, 59, 59);
+
+        List<Coupon> coupons = couponRepository.findTodayCouponsByUniversity(universityId, startOfDay, endOfDay, today);
+
+        List<CouponResponse> responses = coupons.stream()
+                .map(CouponResponse::from)
+                .collect(Collectors.toList());
+
+        // 발급 여부 확인
+        if (!coupons.isEmpty()) {
+            List<StudentCoupon> issuedCoupons = studentCouponRepository.findByUserAndCouponIn(user, coupons);
+            List<Long> issuedCouponIds = issuedCoupons.stream()
+                    .map(sc -> sc.getCoupon().getId())
+                    .collect(Collectors.toList());
+
+            responses.forEach(response -> {
+                if (issuedCouponIds.contains(response.getId())) {
+                    response.setIsIssued(true);
+                }
+            });
+        }
+
+        return responses;
+    }
 
     public List<CouponResponse> getCouponsByStore(Long storeId, User user) {
         List<Coupon> coupons = couponRepository.findByStoreId(storeId);
