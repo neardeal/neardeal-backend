@@ -50,6 +50,7 @@ create table student_profile (
     user_id bigint not null primary key,
     nickname varchar(255),
     university_id bigint,
+    is_club_member bit,
     foreign key (user_id) references user (user_id),
     foreign key (university_id) references university (university_id)
 );
