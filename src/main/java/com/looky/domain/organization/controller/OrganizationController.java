@@ -28,12 +28,19 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     // --- 공통 ---
-
     @Operation(summary = "[공통] 특정 대학의 소속 목록 조회", description = "대학의 모든 소속을 조회합니다.")
     @GetMapping("/universities/{universityId}/organizations")
     public ResponseEntity<CommonResponse<List<OrganizationResponse>>> getOrganizations(
             @PathVariable Long universityId) {
         List<OrganizationResponse> responses = organizationService.getOrganizations(universityId);
+        return ResponseEntity.ok(CommonResponse.success(responses));
+    }
+
+    @Operation(summary = "[공통] 특정 단과대학의 학과 목록 조회", description = "단과대학에 속한 학과 목록을 조회합니다.")
+    @GetMapping("/organizations/{collegeId}/departments")
+    public ResponseEntity<CommonResponse<List<OrganizationResponse>>> getDepartmentsByCollege(
+            @Parameter(description = "단과대학 ID") @PathVariable Long collegeId) {
+        List<OrganizationResponse> responses = organizationService.getDepartmentsByCollege(collegeId);
         return ResponseEntity.ok(CommonResponse.success(responses));
     }
 

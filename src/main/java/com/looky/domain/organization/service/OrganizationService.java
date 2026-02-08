@@ -47,6 +47,20 @@ public class OrganizationService {
                                 .collect(Collectors.toList());
         }
 
+        public List<OrganizationResponse> getDepartmentsByCollege(Long collegeId) {
+                Organization college = organizationRepository.findById(collegeId)
+                                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "단과대학을 찾을 수 없습니다."));
+
+                if (college.getCategory() != OrganizationCategory.COLLEGE) {
+                        throw new CustomException(ErrorCode.BAD_REQUEST, "단과대학만 조회할 수 있습니다.");
+                }
+
+                return organizationRepository.findByParentIdAndCategory(collegeId, OrganizationCategory.DEPARTMENT)
+                                .stream()
+                                .map(OrganizationResponse::from)
+                                .collect(Collectors.toList());
+        }
+
         // --- 관리자 ---
 
         @Transactional
