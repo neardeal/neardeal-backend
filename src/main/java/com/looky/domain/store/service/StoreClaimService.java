@@ -6,6 +6,7 @@ import com.looky.common.service.S3Service;
 import com.looky.domain.store.dto.BizVerificationRequest;
 import com.looky.domain.store.dto.BizVerificationResponse;
 import com.looky.domain.store.dto.StoreClaimRequest;
+import com.looky.domain.store.dto.MyStoreClaimResponse;
 import com.looky.domain.store.entity.StoreClaim;
 import com.looky.domain.store.entity.StoreClaimStatus;
 import com.looky.domain.store.repository.StoreClaimRepository;
@@ -124,5 +125,11 @@ public class StoreClaimService {
         StoreClaim savedStoreClaim = storeClaimRepository.save(storeClaim);
 
         return savedStoreClaim.getId();
+    }
+
+    public List<MyStoreClaimResponse> getMyStoreClaims(User user) {
+        return storeClaimRepository.findByUserId(user.getId()).stream()
+                .map(MyStoreClaimResponse::from)
+                .collect(Collectors.toList());
     }
 }

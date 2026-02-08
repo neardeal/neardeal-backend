@@ -5,6 +5,7 @@ import com.looky.domain.store.dto.BizVerificationRequest;
 import com.looky.domain.store.dto.BizVerificationResponse;
 import com.looky.domain.store.dto.StoreResponse;
 import com.looky.domain.store.dto.StoreClaimRequest;
+import com.looky.domain.store.dto.MyStoreClaimResponse;
 import com.looky.domain.store.service.StoreClaimService;
 import com.looky.security.details.PrincipalDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -55,6 +56,15 @@ public class StoreClaimController {
     ) throws IOException {
         Long storeClaimId = storeClaimService.createStoreClaims(principalDetails.getUser(), request, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(storeClaimId));
+    }
+
+    @Operation(summary = "[점주] 내 상점 소유 요청 목록 조회", description = "점주가 자신이 신청한 상점 소유 요청 목록을 조회합니다.")
+    @GetMapping("/store-claims/my")
+    public ResponseEntity<CommonResponse<List<MyStoreClaimResponse>>> getMyStoreClaims(
+            @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        List<MyStoreClaimResponse> response = storeClaimService.getMyStoreClaims(principalDetails.getUser());
+        return ResponseEntity.ok(CommonResponse.success(response));
     }
 
 }
