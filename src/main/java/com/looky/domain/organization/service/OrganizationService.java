@@ -6,6 +6,7 @@ import com.looky.domain.organization.dto.OrganizationResponse;
 import com.looky.domain.organization.dto.CreateOrganizationRequest;
 import com.looky.domain.organization.dto.UpdateOrganizationRequest;
 import com.looky.domain.organization.entity.Organization;
+import com.looky.domain.organization.entity.OrganizationCategory;
 import com.looky.domain.organization.entity.University;
 import com.looky.domain.organization.entity.UserOrganization;
 import com.looky.domain.organization.repository.OrganizationRepository;
@@ -80,8 +81,8 @@ public class OrganizationService {
                 Organization organization = organizationRepository.findById(organizationId)
                                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "소속을 찾을 수 없습니다."));
 
-                // 본인 소유 확인
-                if (!Objects.equals(organization.getUser().getId(), user.getId())) {
+                // 학생회인 경우 본인 소유 확인
+                if (user.getRole() == Role.ROLE_ADMIN || !Objects.equals(organization.getUser().getId(), user.getId())) {
                         throw new CustomException(ErrorCode.FORBIDDEN, "본인이 생성한 소속만 수정할 수 있습니다.");
                 }
 
@@ -101,8 +102,8 @@ public class OrganizationService {
                 Organization organization = organizationRepository.findById(organizationId)
                                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "소속을 찾을 수 없습니다."));
 
-                // 본인 소유 확인
-                if (!Objects.equals(organization.getUser().getId(), user.getId())) {
+                // 학생회인 경우 본인 소유 확인
+                if (user.getRole() == Role.ROLE_ADMIN || !Objects.equals(organization.getUser().getId(), user.getId())) {
                         throw new CustomException(ErrorCode.FORBIDDEN, "본인이 생성한 소속만 삭제할 수 있습니다.");
                 }
 
@@ -121,6 +122,27 @@ public class OrganizationService {
 
                 if (userOrganizationRepository.existsByUserAndOrganization(currentUser, organization)) {
                         throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 가입된 소속입니다.");
+                }
+
+                // 이미 같은 카테고리(단과대학 or 학과)에 가입되어 있는지 확인
+                if (userOrganizationRepository.existsByUserAndOrganization_Category(currentUser, organization.getCategory())) {
+                        String categoryName = organization.getCategory() == OrganizationCategory.COLLEGE ? "단과대학" : "학과";
+                        throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 가입한 " + categoryName + "이 있습니다.");
+                }
+
+                // 학과에 가입한 경우 단과대학 체크
+                if (organization.getCategory().equals(OrganizationCategory.DEPARTMENT)) {
+                        
+                        // 현재 사용자의 단과대학 찾기
+                        UserOrganization collegeMembership = userOrganizationRepository
+                                .findByUserAndOrganizationCategory(currentUser, OrganizationCategory.COLLEGE)
+                                .stream().findFirst()
+                                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST, "학과에 가입하려면 먼저 단과대학에 소속되어야 합니다."));
+                        
+                        // 선택한 학과의 부모(단과대학)가 사용자의 단과대학과 일치하는지 확인
+                        if (!organization.getParent().getId().equals(collegeMembership.getOrganization().getId())) {
+                                throw new CustomException(ErrorCode.BAD_REQUEST, "선택한 학과가 현재 소속된 단과대학에 속하지 않습니다.");
+                        }
                 }
 
                 UserOrganization userOrganization = UserOrganization.builder()
@@ -144,5 +166,29 @@ public class OrganizationService {
                                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "가입되지 않은 소속입니다."));
 
                 userOrganizationRepository.delete(userOrganization);
+        }
+
+        @Transactional
+        public void changeOrganization(Long organizationId, User user) {
+                Organization newOrganization = organizationRepository.findById(organizationId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "소속을 찾을 수 없습니다."));
+
+                User currentUser = userRepository.findById(user.getId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+                // 기존 가입된 같은 카테고리의 조직 탈퇴 처리
+                if (userOrganizationRepository.existsByUserAndOrganization_Category(currentUser, newOrganization.getCategory())) {
+                        userOrganizationRepository.deleteByUserAndOrganizationCategory(currentUser, newOrganization.getCategory());
+                }
+
+                // 단과대학 변경 시 기존 학과도 탈퇴
+                if (newOrganization.getCategory() == OrganizationCategory.COLLEGE) {
+                        if (userOrganizationRepository.existsByUserAndOrganization_Category(currentUser, OrganizationCategory.DEPARTMENT)) {
+                                userOrganizationRepository.deleteByUserAndOrganizationCategory(currentUser, OrganizationCategory.DEPARTMENT);
+                        }
+                }
+
+                // 새로운 조직 가입
+                joinOrganization(organizationId, user);
         }
 }

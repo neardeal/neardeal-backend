@@ -338,6 +338,17 @@ public class AuthService {
         if (departmentId != null) {
             Organization department = organizationRepository.findById(departmentId)
                     .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 학과를 찾을 수 없습니다."));
+            
+            // 학과 선택 시 단과대학 정보가 없으면 에러
+            if (collegeId == null) {
+                 throw new CustomException(ErrorCode.BAD_REQUEST, "학과를 선택하려면 단과대학을 먼저 선택해야 합니다.");
+            }
+            
+            // 선택한 학과가 선택한 단과대학 소속인지 확인
+            if (department.getParent() == null || !department.getParent().getId().equals(collegeId)) {
+                throw new CustomException(ErrorCode.BAD_REQUEST, "선택한 학과가 해당 단과대학에 속하지 않습니다.");
+            }
+
             userOrganizationRepository.save(new UserOrganization(user, department));
         }
 

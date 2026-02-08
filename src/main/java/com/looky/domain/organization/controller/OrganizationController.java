@@ -92,4 +92,14 @@ public class OrganizationController {
         organizationService.leaveOrganization(organizationId, principalDetails.getUser());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonResponse.success(null));
     }
+
+    @Operation(summary = "[학생] 소속 변경", description = "학생이 소속을 변경합니다. (기존 동종 소속 자동 탈퇴)")
+    @PatchMapping("/organizations/{organizationId}/membership")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<CommonResponse<Void>> changeOrganization(
+            @PathVariable Long organizationId,
+            @Parameter(hidden = true) @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        organizationService.changeOrganization(organizationId, principalDetails.getUser());
+        return ResponseEntity.ok(CommonResponse.success(null));
+    }
 }

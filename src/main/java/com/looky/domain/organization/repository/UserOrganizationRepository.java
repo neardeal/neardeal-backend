@@ -14,6 +14,8 @@ import com.looky.domain.organization.entity.OrganizationCategory;
 public interface UserOrganizationRepository extends JpaRepository<UserOrganization, Long> {
     boolean existsByUserAndOrganization(User user, Organization organization);
 
+    boolean existsByUserAndOrganization_Category(User user, OrganizationCategory category);
+
     Optional<UserOrganization> findByUserAndOrganization(User user, Organization organization);
 
     // 유저의 모든 소속 단체 조회
