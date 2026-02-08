@@ -9,7 +9,6 @@ import com.looky.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -89,8 +88,6 @@ public class SecurityConfig {
                 http
                         .authorizeHttpRequests((auth) -> auth
                                 .requestMatchers("/api/auth/**", "/reissue", "/docs", "/swagger-ui/**", "/v3/api-docs/**", "/health")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/items/**", "/api/events/**", "/api/universities/*/organizations")
                                 .permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated());
