@@ -184,8 +184,7 @@ public class ReviewService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND, "해당 상점을 찾을 수 없습니다."));
 
-        // 대댓글 구조를 위해 Root 리뷰만 조회
-        return reviewRepository.findByStoreAndParentReviewIsNull(store, pageable)
+        return reviewRepository.findByStore(store, pageable)
                 .map(ReviewResponse::from);
     }
 

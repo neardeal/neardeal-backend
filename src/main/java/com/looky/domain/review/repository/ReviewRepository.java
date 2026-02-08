@@ -14,6 +14,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @EntityGraph(attributePaths = { "user" })
     Page<Review> findByStoreAndParentReviewIsNull(Store store, Pageable pageable);
 
+    @EntityGraph(attributePaths = { "user" })
+    Page<Review> findByStore(Store store, Pageable pageable);
+
     @EntityGraph(attributePaths = { "store" })
     Page<Review> findByUserAndParentReviewIsNull(User user, Pageable pageable);
 
